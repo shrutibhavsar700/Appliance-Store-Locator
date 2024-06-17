@@ -1,0 +1,131 @@
+import java.util.*;
+
+class Appliance {
+    String name;
+    List<String> companies;
+    Map<String, PriorityQueue<Model>> companyModels;
+
+    public Appliance(String name) {
+        this.name = name;
+        this.companies = new ArrayList<>();
+        this.companyModels = new HashMap<>();
+    }
+
+    public void addCompany(String company) {
+        companies.add(company);
+        companyModels.put(company, new PriorityQueue<>(new ModelComparator()));
+    }
+
+    public void addModel(String company, Model model) {
+        if (companyModels.containsKey(company)) {
+            companyModels.get(company).add(model);
+        }
+    }
+
+    public void displayCompanies() {
+        System.out.println("Select a company for " + name + ":");
+        int companyIndex = 1;
+        for (String company : companies) {
+            System.out.println(companyIndex + ". " + company);
+            companyIndex++;
+        }
+    }
+
+    public void displayModels(String company) {
+        if (companyModels.containsKey(company)) {
+            PriorityQueue<Model> models = companyModels.get(company);
+            System.out.println("Models for " + company + " " + name + ":");
+            while (!models.isEmpty()) {
+                Model model = models.poll();
+                System.out.println("Model: " + model.name + " Manufacture Year: " + model.manufactureYear);
+            }
+        }
+    }
+}
+
+class Model {
+    String name;
+    int manufactureYear;
+
+    public Model(String name, int manufactureYear) {
+        this.name = name;
+        this.manufactureYear = manufactureYear;
+    }
+}
+
+class ModelComparator implements Comparator<Model> {
+    @Override
+    public int compare(Model m1, Model m2) {
+        return m2.manufactureYear - m1.manufactureYear;
+    }
+}
+
+ class ApplianceDemo {
+    public static void main(String[] args) {
+        Map<String, Appliance> appliances = new HashMap<>();
+
+        // Creating Appliances
+        appliances.put("Phone", new Appliance("Phone"));
+        appliances.put("Laptop", new Appliance("Laptop"));
+        appliances.put("Refrigerator", new Appliance("Refrigerator"));
+        appliances.put("TV", new Appliance("TV"));
+
+        // Adding Companies and Models to Appliances
+        appliances.get("Phone").addCompany("Apple");
+        appliances.get("Phone").addCompany("Samsung");
+        appliances.get("Phone").addCompany("Mi");
+        appliances.get("Phone").addModel("Apple", new Model("iPhone 13", 2022));
+        appliances.get("Phone").addModel("Samsung", new Model("Galaxy S21", 2021));
+        appliances.get("Phone").addModel("Mi", new Model("Mi 11", 2023));
+
+        appliances.get("Laptop").addCompany("Dell");
+        appliances.get("Laptop").addCompany("HP");
+        appliances.get("Laptop").addModel("Dell", new Model("Inspiron 15", 2021));
+        appliances.get("Laptop").addModel("HP", new Model("HP Pavilion", 2022));
+
+        appliances.get("Refrigerator").addCompany("LG");
+        appliances.get("Refrigerator").addCompany("Haier");
+        appliances.get("Refrigerator").addModel("LG", new Model("LG 4-Door", 2023));
+        appliances.get("Refrigerator").addModel("Haier", new Model("Haier Frost-Free", 2022));
+
+        appliances.get("TV").addCompany("Sony");
+        appliances.get("TV").addCompany("LG");
+        appliances.get("TV").addModel("Sony", new Model("Sony Bravia", 2021));
+        appliances.get("TV").addModel("LG", new Model("LG OLED", 2022));
+
+        // Display Appliance Types
+        System.out.println("Select an Appliance Type:");
+        int applianceIndex = 1;
+        for (String type : appliances.keySet()) {
+            System.out.println(applianceIndex + ". " + type);
+            applianceIndex++;
+        }
+
+        // Simulate user selection
+        Scanner scanner = new Scanner(System.in);
+        int selectedApplianceIndex = scanner.nextInt();
+
+        List<String> applianceTypes = new ArrayList<>(appliances.keySet());
+
+        if (selectedApplianceIndex >= 1 && selectedApplianceIndex <= applianceTypes.size()) {
+            String selectedType = applianceTypes.get(selectedApplianceIndex - 1);
+            Appliance selectedAppliance = appliances.get(selectedType);
+            selectedAppliance.displayCompanies();
+
+            System.out.println("Select a company for " + selectedType + ":");
+            int selectedCompanyIndex = scanner.nextInt();
+            List<String> selectedCompanies = selectedAppliance.companies;
+
+            if (selectedCompanyIndex >= 1 && selectedCompanyIndex <= selectedCompanies.size()) {
+                String selectedCompany = selectedCompanies.get(selectedCompanyIndex - 1);
+                System.out.println("You have selected " + selectedCompany + " for " + selectedType);
+                selectedAppliance.displayModels(selectedCompany);
+            } else {
+                System.out.println("Invalid Company Selection");
+            }
+        } else {
+            System.out.println("Invalid Appliance Selection");
+        }
+    }
+}
+
